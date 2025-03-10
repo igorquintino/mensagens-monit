@@ -16,7 +16,7 @@ venom
     .create({
         session: 'bot-promocoes',
         multidevice: true,
-        headless: true, // Força o modo headless para rodar sem interface gráfica
+        headless: true, // Força o modo headless para rodar no Railway
         browserArgs: [
             '--no-sandbox',
             '--disable-setuid-sandbox',
@@ -28,6 +28,7 @@ venom
             '--disable-gpu'
         ],
         puppeteerOptions: {
+            headless: "new", // Garante que Puppeteer rode corretamente
             args: ['--no-sandbox', '--disable-setuid-sandbox']
         },
         catchQR: (base64Qr) => {
@@ -41,7 +42,10 @@ venom
         console.log("✅ BOT INICIADO COM SUCESSO! Escaneie o QR Code para conectar.");
         start(client);
     })
-    .catch((erro) => console.log("❌ ERRO AO INICIAR O BOT:", erro));
+    .catch((erro) => {
+        console.error("❌ ERRO AO INICIAR O BOT:", erro);
+        process.exit(1); // Sai do processo se o bot falhar
+    });
 
 async function start(client) {
     client.onMessage(async (message) => {

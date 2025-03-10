@@ -1,6 +1,28 @@
 import fs from 'fs';
 import venom from 'venom-bot';
-import { desencurtarLink, precisaDesencurtar, corrigirLinkShopee, corrigirLinkAmazon } from './utils.js';
+
+venom
+    .create({
+        session: 'bot-promocoes',
+        browserArgs: [
+            '--no-sandbox',
+            '--disable-setuid-sandbox',
+            '--disable-dev-shm-usage',
+            '--disable-accelerated-2d-canvas',
+            '--no-first-run',
+            '--no-zygote',
+            '--single-process',
+            '--disable-gpu'
+        ],
+        puppeteerOptions: {
+            executablePath: '/usr/bin/google-chrome-stable'
+        }
+    })
+    .then((client) => {
+        console.log("✅ BOT INICIADO COM SUCESSO!");
+        start(client);
+    })
+    .catch((erro) => console.log("❌ ERRO AO INICIAR O BOT:", erro));
 
 // Lê os afiliados do JSON
 const afiliados = JSON.parse(fs.readFileSync('afiliados.json', 'utf8'));

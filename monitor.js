@@ -1,28 +1,6 @@
 import fs from 'fs';
 import venom from 'venom-bot';
-
-venom
-    .create({
-        session: 'bot-promocoes',
-        browserArgs: [
-            '--no-sandbox',
-            '--disable-setuid-sandbox',
-            '--disable-dev-shm-usage',
-            '--disable-accelerated-2d-canvas',
-            '--no-first-run',
-            '--no-zygote',
-            '--single-process',
-            '--disable-gpu'
-        ],
-        puppeteerOptions: {
-            executablePath: '/usr/bin/google-chrome-stable'
-        }
-    })
-    .then((client) => {
-        console.log("✅ BOT INICIADO COM SUCESSO!");
-        start(client);
-    })
-    .catch((erro) => console.log("❌ ERRO AO INICIAR O BOT:", erro));
+import { precisaDesencurtar, desencurtarLink, corrigirLinkShopee, corrigirLinkAmazon } from './utils.js';
 
 // Lê os afiliados do JSON
 const afiliados = JSON.parse(fs.readFileSync('afiliados.json', 'utf8'));
@@ -38,6 +16,19 @@ venom
     .create({
         session: 'bot-promocoes',
         multidevice: true,
+        browserArgs: [
+            '--no-sandbox',
+            '--disable-setuid-sandbox',
+            '--disable-dev-shm-usage',
+            '--disable-accelerated-2d-canvas',
+            '--no-first-run',
+            '--no-zygote',
+            '--single-process',
+            '--disable-gpu'
+        ],
+        puppeteerOptions: {
+            executablePath: '/usr/bin/google-chrome-stable'
+        },
         catchQR: (base64Qr) => {
             console.log("📸 QR Code gerado! Acesse: /public/qr.png para escanear.");
 

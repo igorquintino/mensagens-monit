@@ -1,17 +1,17 @@
-# Usa a imagem oficial do Node.js
-FROM node:18
+# Usa a imagem oficial do Playwright com Node.js
+FROM mcr.microsoft.com/playwright:v1.50.1-focal
 
-# Define o diretório de trabalho
+# Define o diretório de trabalho no container
 WORKDIR /app
 
 # Copia os arquivos do projeto para dentro do container
 COPY . .
 
-# Instala apenas as dependências do projeto
+# Instala as dependências do projeto
 RUN npm install
 
-# Remove Puppeteer e qualquer vestígio do Chromium
-RUN npm uninstall puppeteer puppeteer-core
+# Instala os navegadores necessários para o Playwright
+RUN npx playwright install chromium
 
-# Define o comando para iniciar o bot
-CMD ["npm", "start"]
+# Define o comando para rodar o bot
+CMD ["node", "monitor.js"]

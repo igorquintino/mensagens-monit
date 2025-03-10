@@ -16,7 +16,6 @@
     "node-fetch": "^2.7.0",
     "p-limit": "^6.2.0",
     "pg": "^8.13.2",
-    "playwright": "^1.50.1",
     "tar-stream": "^3.1.7",
     "twilio": "^5.4.5"
   }

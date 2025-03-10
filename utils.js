@@ -5,18 +5,21 @@ const shopeeAfiliadoID = "id_7RhfldmMti"; // Substitua pelo seu ID de afiliado S
 const amazonAfiliadoID = "igorquintin09-20"; // Substitua pelo seu ID de afiliado Amazon
 
 async function desencurtarLink(link) {
-    const browser = await puppeteer.launch({ headless: true });
+    const browser = await puppeteer.launch({
+        headless: true,
+        args: ['--no-sandbox', '--disable-setuid-sandbox']
+    });
     const page = await browser.newPage();
 
     try {
         await page.goto(link, { waitUntil: 'domcontentloaded' });
-        const urlReal = page.url(); // Obtém a URL final
+        const urlReal = page.url();
         await browser.close();
         return urlReal;
     } catch (error) {
         console.log('❌ Erro ao desencurtar:', error);
         await browser.close();
-        return link; // Retorna o próprio link se falhar
+        return link;
     }
 }
 

@@ -1,4 +1,4 @@
-# Usa uma imagem do Node.js como base
+# Usa a imagem oficial do Node.js
 FROM node:18
 
 # Define o diretório de trabalho
@@ -7,23 +7,38 @@ WORKDIR /app
 # Copia os arquivos do projeto para dentro do container
 COPY . .
 
-# Instala as dependências do sistema para rodar o Puppeteer
+# Instala todas as bibliotecas necessárias para rodar o Chromium no Railway
 RUN apt-get update && apt-get install -y \
-  libx11-xcb1 \
-  libasound2 \
   libnss3 \
-  libxss1 \
-  libappindicator3-1 \
+  libx11-xcb1 \
+  libxcomposite1 \
+  libxcursor1 \
+  libxi6 \
+  libxtst6 \
+  libglib2.0-0 \
+  libatk1.0-0 \
   libatk-bridge2.0-0 \
-  libgbm-dev \
+  libxdamage1 \
+  libxrandr2 \
+  libgbm1 \
+  libasound2 \
+  libpangocairo-1.0-0 \
+  libpango-1.0-0 \
+  libcups2 \
+  fonts-liberation \
+  libjpeg-dev \
+  libopengl0 \
+  libxshmfence1 \
+  libxrender1 \
+  xdg-utils \
   && rm -rf /var/lib/apt/lists/*
 
-# Instala as dependências do projeto
+# Instala as dependências do Node.js
 RUN npm install
 
-# Define a variável de ambiente para o Puppeteer ignorar a instalação do Chromium
+# Define as variáveis de ambiente para o Puppeteer usar o Chromium correto
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
 ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/google-chrome-stable
 
-# Define o comando para rodar o bot
+# Define o comando para iniciar o bot
 CMD ["node", "monitor.js"]

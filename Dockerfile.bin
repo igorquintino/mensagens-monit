@@ -1,20 +1,29 @@
-# Usando a imagem oficial do Node.js como base
+# Usa uma imagem do Node.js como base
 FROM node:18
 
-# Definindo o diretório de trabalho dentro do contêiner
+# Define o diretório de trabalho
 WORKDIR /app
 
-# Copiando arquivos do projeto para dentro do contêiner
+# Copia os arquivos do projeto para dentro do container
 COPY . .
 
-# Atualizando pacotes e instalando dependências necessárias para o Puppeteer e VenomBot
-RUN apt-get update && apt-get install -y     libx11-xcb1     libasound2     libnss3     libxss1     libappindicator3-1     libatk-bridge2.0-0     libgbm-dev     && rm -rf /var/lib/apt/lists/*
+# Instala as dependências do sistema para rodar o Puppeteer
+RUN apt-get update && apt-get install -y \
+  libx11-xcb1 \
+  libasound2 \
+  libnss3 \
+  libxss1 \
+  libappindicator3-1 \
+  libatk-bridge2.0-0 \
+  libgbm-dev \
+  && rm -rf /var/lib/apt/lists/*
 
-# Instalando as dependências do Node.js
+# Instala as dependências do projeto
 RUN npm install
 
-# Expondo a porta necessária para o funcionamento do bot (caso precise)
-EXPOSE 3000
+# Define a variável de ambiente para o Puppeteer ignorar a instalação do Chromium
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/google-chrome-stable
 
-# Comando para iniciar o monitor de preços
+# Define o comando para rodar o bot
 CMD ["node", "monitor.js"]

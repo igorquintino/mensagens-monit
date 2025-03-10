@@ -1,17 +1,17 @@
-# Usa a imagem oficial do Playwright com Node.js
-FROM mcr.microsoft.com/playwright:v1.50.1-focal
+# Usa uma imagem do Node.js como base
+FROM node:18
 
-# Define o diretório de trabalho no container
+# Define o diretório de trabalho
 WORKDIR /app
 
-# Copia os arquivos do projeto para dentro do container
-COPY . .
+# Copia os arquivos necessários
+COPY package.json package-lock.json ./
 
-# Instala as dependências do projeto
+# Instala as dependências
 RUN npm install
 
-# Instala os navegadores necessários para o Playwright
-RUN npx playwright install chromium
+# Copia o restante dos arquivos
+COPY . .
 
-# Define o comando para rodar o bot
+# Define o comando que inicia o bot no Railway
 CMD ["node", "monitor.js"]

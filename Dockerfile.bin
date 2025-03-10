@@ -1,20 +1,17 @@
 # Usa a imagem oficial do Node.js
 FROM node:18
 
-# Remove Puppeteer para evitar problemas
-RUN npm uninstall puppeteer puppeteer-core
-
 # Define o diretório de trabalho
 WORKDIR /app
 
 # Copia os arquivos do projeto para dentro do container
 COPY . .
 
-# Instala todas as dependências do Node.js
+# Instala apenas as dependências do projeto
 RUN npm install
 
-# Remove pacotes desnecessários para reduzir o tamanho da imagem
-RUN apt-get update && apt-get autoremove -y && rm -rf /var/lib/apt/lists/*
+# Remove Puppeteer e qualquer vestígio do Chromium
+RUN npm uninstall puppeteer puppeteer-core
 
 # Define o comando para iniciar o bot
-CMD ["node", "monitor.js"]
+CMD ["npm", "start"]

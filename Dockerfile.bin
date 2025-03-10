@@ -1,6 +1,9 @@
 # Usa a imagem oficial do Node.js
 FROM node:18
 
+
+RUN npm uninstall puppeteer puppeteer-core
+
 # Define o diretório de trabalho
 WORKDIR /app
 

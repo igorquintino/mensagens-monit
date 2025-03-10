@@ -1,7 +1,8 @@
-const fs = require('fs');
-const venom = require('venom-bot');
-const { desencurtarLink, precisaDesencurtar, corrigirLinkShopee, corrigirLinkAmazon } = require('./utils');
+import fs from 'fs';
+import venom from 'venom-bot';
+import { desencurtarLink, precisaDesencurtar, corrigirLinkShopee, corrigirLinkAmazon } from './utils.js';
 
+// Lê os afiliados do JSON
 const afiliados = JSON.parse(fs.readFileSync('afiliados.json', 'utf8'));
 const lojasPermitidas = Object.keys(afiliados);
 
@@ -15,7 +16,7 @@ venom
     .create({
         session: 'bot-promocoes',
         multidevice: true,
-        catchQR: (base64Qr, asciiQR) => {
+        catchQR: (base64Qr) => {
             console.log("📸 QR Code gerado! Acesse: /public/qr.png para escanear.");
 
             const base64Image = base64Qr.replace(/^data:image\/png;base64,/, "");

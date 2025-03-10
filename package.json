@@ -7,15 +7,16 @@
   "scripts": {
     "start": "node monitor.js"
   },
-  "dependencies": {
-    "bl": "^6.0.20",
-    "buffer": "^6.0.3",
-    "dotenv": "^16.4.7",
-    "node-fetch": "^2.7.0",
-    "p-limit": "^6.2.0",
-    "pg": "^8.13.2",
-    "playwright": "^1.50.1",
-    "tar-stream": "^3.1.7",
-    "twilio": "^5.4.5"
-  }
+ "dependencies": {
+  "venom-bot": "^4.0.0", 
+  "bl": "^6.0.20",
+  "buffer": "^6.0.3",
+  "dotenv": "^16.4.7",
+  "node-fetch": "^2.7.0",
+  "p-limit": "^6.2.0",
+  "pg": "^8.13.2",
+  "playwright": "^1.50.1",
+  "tar-stream": "^3.1.7",
+  "twilio": "^5.4.5"
+}
 }

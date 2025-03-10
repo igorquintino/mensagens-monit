@@ -1,10 +1,21 @@
 {
-  "name": "bot-promocoes",
+  "name": "monitor-precos",
   "version": "1.0.0",
-  "description": "Bot para capturar e repassar promoções no WhatsApp",
-  "main": "index.js",
+  "description": "Monitor de preços automatizado",
+  "main": "monitor.js",
+  "type": "module",
+  "scripts": {
+    "start": "node monitor.js"
+  },
   "dependencies": {
-    "venom-bot": "^4.0.0",
-    "puppeteer": "^21.3.0"
+    "bl": "^6.0.20",
+    "buffer": "^6.0.3",
+    "dotenv": "^16.4.7",
+    "node-fetch": "^2.7.0",
+    "p-limit": "^6.2.0",
+    "pg": "^8.13.2",
+    "playwright": "^1.50.1",
+    "tar-stream": "^3.1.7",
+    "twilio": "^5.4.5"
   }
 }

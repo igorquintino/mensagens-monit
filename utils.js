@@ -1,6 +1,6 @@
-import fetch from 'node-fetch';
+import { chromium } from 'playwright';
 
-// Lista de domínios encurtadores que precisam ser resolvidos
+// Lista de domínios que precisam ser desencurtados
 const dominiosEncurtadores = [
     "bit.ly",
     "tinyurl.com",
@@ -15,16 +15,15 @@ export function precisaDesencurtar(link) {
     return dominiosEncurtadores.some(dominio => link.includes(dominio));
 }
 
-// Função para desencurtar links sem Puppeteer
+// Função para desencurtar links usando Playwright
 export async function desencurtarLink(url) {
     try {
-        if (!url.startsWith("http")) {
-            console.error("⚠️ Link inválido:", url);
-            return url;
-        }
-
-        const response = await fetch(url, { method: 'HEAD', redirect: 'follow' });
-        return response.url || url; // Retorna a URL final após redirecionamentos
+        const browser = await chromium.launch({ headless: true });
+        const page = await browser.newPage();
+        await page.goto(url, { waitUntil: 'domcontentloaded' });
+        const finalUrl = page.url();
+        await browser.close();
+        return finalUrl || url;
     } catch (error) {
         console.error("❌ Erro ao desencurtar link:", error);
         return url; // Retorna o link original se der erro
@@ -34,7 +33,7 @@ export async function desencurtarLink(url) {
 // Função para corrigir links da Shopee e garantir que sejam de afiliado
 export function corrigirLinkShopee(link) {
     if (link.includes("shopee.com.br") && !link.includes("utm_source")) {
-        return link + (link.includes("?") ? "&" : "?") + "utm_source=afiliado_exemplo"; // Substitua pelo seu código de afiliado
+        return link + "&utm_source=afiliado_exemplo"; // Substitua pelo seu código de afiliado
     }
     return link;
 }
@@ -42,7 +41,7 @@ export function corrigirLinkShopee(link) {
 // Função para corrigir links da Amazon e garantir que sejam de afiliado
 export function corrigirLinkAmazon(link) {
     if (link.includes("amazon.com.br") && !link.includes("tag=")) {
-        return link + (link.includes("?") ? "&" : "?") + "tag=seuAfiliadoAmazon"; // Substitua pelo seu código de afiliado
+        return link + "&tag=seuAfiliadoAmazon"; // Substitua pelo seu código de afiliado
     }
     return link;
 }

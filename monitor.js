@@ -11,26 +11,14 @@ if (!fs.existsSync("public")) {
     fs.mkdirSync("public");
 }
 
-// Inicializa o bot e salva o QR Code como imagem
+// Inicializa o bot SEM Puppeteer
 venom
     .create({
         session: 'bot-promocoes',
         multidevice: true,
-        headless: true, // Força o modo headless para rodar no Railway
-        browserArgs: [
-            '--no-sandbox',
-            '--disable-setuid-sandbox',
-            '--disable-dev-shm-usage',
-            '--disable-accelerated-2d-canvas',
-            '--no-first-run',
-            '--no-zygote',
-            '--single-process',
-            '--disable-gpu'
-        ],
-        puppeteerOptions: {
-            headless: "new", // Garante que Puppeteer rode corretamente
-            args: ['--no-sandbox', '--disable-setuid-sandbox']
-        },
+        disableSpins: true, // Evita logs desnecessários no Railway
+        disableWelcome: true, // Remove a mensagem de boas-vindas do Venom
+        logQR: false, // Evita logs visuais do QR Code
         catchQR: (base64Qr) => {
             console.log("📸 QR Code gerado! Acesse: /public/qr.png para escanear.");
 
@@ -44,7 +32,7 @@ venom
     })
     .catch((erro) => {
         console.error("❌ ERRO AO INICIAR O BOT:", erro);
-        process.exit(1); // Sai do processo se o bot falhar
+        process.exit(1);
     });
 
 async function start(client) {

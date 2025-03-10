@@ -1,0 +1,10 @@
+{
+  "name": "bot-promocoes",
+  "version": "1.0.0",
+  "description": "Bot para capturar e repassar promoções no WhatsApp",
+  "main": "index.js",
+  "dependencies": {
+    "venom-bot": "^4.0.0",
+    "puppeteer": "^21.3.0"
+  }
+}

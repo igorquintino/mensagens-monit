@@ -16,6 +16,7 @@ venom
     .create({
         session: 'bot-promocoes',
         multidevice: true,
+        headless: true, // Força o modo headless para rodar sem interface gráfica
         browserArgs: [
             '--no-sandbox',
             '--disable-setuid-sandbox',
@@ -27,7 +28,7 @@ venom
             '--disable-gpu'
         ],
         puppeteerOptions: {
-            executablePath: '/usr/bin/google-chrome-stable'
+            args: ['--no-sandbox', '--disable-setuid-sandbox']
         },
         catchQR: (base64Qr) => {
             console.log("📸 QR Code gerado! Acesse: /public/qr.png para escanear.");
@@ -44,30 +45,37 @@ venom
 
 async function start(client) {
     client.onMessage(async (message) => {
-        const regexUrl = /(https?:\/\/[^\s]+)/g;
-        const links = message.body.match(regexUrl);
+        try {
+            const regexUrl = /(https?:\/\/[^\s]+)/g;
+            const links = message.body.match(regexUrl);
 
-        if (links) {
-            let linkOriginal = links[0]; // Pega o primeiro link encontrado
+            if (links) {
+                let linkOriginal = links[0]; // Pega o primeiro link encontrado
 
-            // Se for um link encurtado, desencurta antes de processar
-            if (precisaDesencurtar(linkOriginal)) {
-                console.log(`🔍 Desencurtando link: ${linkOriginal}`);
-                linkOriginal = await desencurtarLink(linkOriginal);
+                // Se for um link encurtado, desencurta antes de processar
+                if (precisaDesencurtar(linkOriginal)) {
+                    console.log(`🔍 Desencurtando link: ${linkOriginal}`);
+                    linkOriginal = await desencurtarLink(linkOriginal);
+                }
+
+                // Se for um link da Shopee, garantir que é afiliado
+                if (linkOriginal.includes("shopee.com.br")) {
+                    linkOriginal = corrigirLinkShopee(linkOriginal);
+                }
+
+                // Se for um link da Amazon, garantir que é afiliado
+                if (linkOriginal.includes("amazon.com.br")) {
+                    linkOriginal = corrigirLinkAmazon(linkOriginal);
+                }
+
+                console.log(`[🚀 REENVIANDO] ${linkOriginal}`);
+
+                // Substitua 'SEU-GRUPO-ID' pelo ID real do grupo para onde as promoções serão enviadas
+                const grupoDestino = 'SEU-GRUPO-ID';
+                await client.sendText(grupoDestino, `🔗 Oferta imperdível! Pegue agora: ${linkOriginal}`);
             }
-
-            // Se for um link da Shopee, garantir que é afiliado
-            if (linkOriginal.includes("shopee.com.br")) {
-                linkOriginal = corrigirLinkShopee(linkOriginal);
-            }
-
-            // Se for um link da Amazon, garantir que é afiliado
-            if (linkOriginal.includes("amazon.com.br")) {
-                linkOriginal = corrigirLinkAmazon(linkOriginal);
-            }
-
-            console.log(`[🚀 REENVIANDO] ${linkOriginal}`);
-            await client.sendText('SEU-GRUPO-ID', `🔗 Oferta imperdível! Pegue agora: ${linkOriginal}`);
+        } catch (error) {
+            console.error("❌ Erro ao processar mensagem:", error);
         }
     });
 }

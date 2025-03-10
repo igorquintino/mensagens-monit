@@ -1,17 +1,14 @@
-# Usa uma imagem do Node.js como base
+# Usa a imagem oficial do Node.js
 FROM node:18
 
 # Define o diretório de trabalho
 WORKDIR /app
 
-# Copia os arquivos necessários
-COPY package.json package-lock.json ./
-
-# Instala as dependências
-RUN npm install
-
-# Copia o restante dos arquivos
+# Copia os arquivos do projeto para dentro do container
 COPY . .
 
-# Define o comando que inicia o bot no Railway
+# Instala as dependências do projeto
+RUN npm install
+
+# Define o comando para iniciar o bot
 CMD ["node", "monitor.js"]

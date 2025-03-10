@@ -5,24 +5,28 @@ const { desencurtarLink, precisaDesencurtar, corrigirLinkShopee, corrigirLinkAma
 const afiliados = JSON.parse(fs.readFileSync('afiliados.json', 'utf8'));
 const lojasPermitidas = Object.keys(afiliados);
 
-// Função para substituir o link pelo link de afiliado correto
-function substituirPorAfiliado(link) {
-    for (const loja of lojasPermitidas) {
-        if (link.includes(loja)) {
-            return link + afiliados[loja]; // Adiciona o código de afiliado correto
-        }
-    }
-    return link;
+// Criar a pasta public/ se não existir
+if (!fs.existsSync("public")) {
+    fs.mkdirSync("public");
 }
 
-// Inicializa o bot
+// Inicializa o bot e salva o QR Code como imagem
 venom
     .create({
         session: 'bot-promocoes',
-        multidevice: true
+        multidevice: true,
+        catchQR: (base64Qr, asciiQR) => {
+            console.log("📸 QR Code gerado! Acesse: /public/qr.png para escanear.");
+
+            const base64Image = base64Qr.replace(/^data:image\/png;base64,/, "");
+            fs.writeFileSync("public/qr.png", base64Image, 'base64');
+        }
     })
-    .then((client) => start(client))
-    .catch((erro) => console.log(erro));
+    .then((client) => {
+        console.log("✅ BOT INICIADO COM SUCESSO! Escaneie o QR Code para conectar.");
+        start(client);
+    })
+    .catch((erro) => console.log("❌ ERRO AO INICIAR O BOT:", erro));
 
 async function start(client) {
     client.onMessage(async (message) => {
@@ -48,12 +52,8 @@ async function start(client) {
                 linkOriginal = corrigirLinkAmazon(linkOriginal);
             }
 
-            // Agora, substituímos pelo link de afiliado
-            const linkAfiliado = substituirPorAfiliado(linkOriginal);
-            const novaMensagem = formatarMensagem(message.body, linkAfiliado);
-
-            console.log(`[🚀 REENVIANDO] ${novaMensagem}`);
-            await client.sendText('SEU-GRUPO-ID', novaMensagem);
+            console.log(`[🚀 REENVIANDO] ${linkOriginal}`);
+            await client.sendText('SEU-GRUPO-ID', `🔗 Oferta imperdível! Pegue agora: ${linkOriginal}`);
         }
     });
 }

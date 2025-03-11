@@ -6,6 +6,8 @@
   "type": "module",
   "scripts": {
     "start": "node monitor.js"
+   "postinstall": "npm install --force"
+
   },
   "dependencies": {
     "puppeteer": "^21.8.0",

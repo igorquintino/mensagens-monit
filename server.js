@@ -1,47 +1,34 @@
-import 'dotenv/config';
-import express from 'express';
-import bodyParser from 'body-parser';
-import TelegramBot from 'node-telegram-bot-api';
+import { TelegramClient } from "telegram";
+import { StringSession } from "telegram/sessions";
+import input from "input"; // Para pedir o código de login no terminal
 
-const app = express();
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
+const apiId = YOUR_API_ID; // Substitua pelo seu api_id
+const apiHash = "YOUR_API_HASH"; // Substitua pelo seu api_hash
+const stringSession = new StringSession(""); // Deixe vazio no primeiro login
 
-const TELEGRAM_TOKEN = process.env.TELEGRAM_TOKEN;
-const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID;
-const telegramBot = new TelegramBot(TELEGRAM_TOKEN, { polling: false });
-
-app.post('/webhook-whatsapp', (req, res) => {
-    const mensagemRecebida = req.body.Body;
-    console.log("Mensagem original:", mensagemRecebida);
-
-    const mensagemFormatada = processarMensagem(mensagemRecebida);
-
-    if (mensagemFormatada) {
-        telegramBot.sendMessage(TELEGRAM_CHAT_ID, mensagemFormatada)
-            .then(() => console.log("✅ Mensagem enviada para o Telegram!"))
-            .catch(err => console.error("❌ Erro ao enviar mensagem:", err));
-    } else {
-        console.log("⚠️ Mensagem ignorada (não contém link)");
-    }
-
-    res.sendStatus(200);
+const client = new TelegramClient(stringSession, apiId, apiHash, {
+  connectionRetries: 5,
 });
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`🚀 Webhook rodando na porta ${PORT}`));
+async function run() {
+  console.log("Iniciando...");
+  await client.start({
+    phoneNumber: async () => await input.text("Digite seu número de telefone: "),
+    password: async () => await input.text("Digite sua senha (se houver): "),
+    phoneCode: async () => await input.text("Digite o código recebido: "),
+    onError: (err) => console.log(err),
+  });
 
-function processarMensagem(mensagem) {
-    const regexLink = /(https?:\/\/[^\s]+)/g;
-    const linksEncontrados = mensagem.match(regexLink);
+  console.log("Logado com sucesso!");
+  console.log("Sessão salva:", client.session.save()); // Salve a sessão para não precisar logar toda vez
 
-    if (!linksEncontrados) return null;
-
-    const linkOriginal = linksEncontrados[0];
-
-    const linkAfiliado = linkOriginal.includes("amazon") 
-        ? linkOriginal + "?tag=SEU_CODIGO_AFILIADO"
-        : linkOriginal;
-
-    return `🔥 Promoção Detectada! 🔥\n\n${mensagem}\n\n🔗 *Link com nosso cupom:* ${linkAfiliado}`;
+  client.addEventHandler(async (event) => {
+    const message = event.message;
+    if (message) {
+      console.log(`Nova mensagem de ${message.chat.title || message.senderId}: ${message.text}`);
+      // Aqui você pode filtrar, formatar e reenviar as mensagens para outro grupo
+    }
+  });
 }
+
+run();

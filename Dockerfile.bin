@@ -1,4 +1,4 @@
-# Usa uma imagem oficial do Node.js
+# Usa uma imagem oficial do Node.js como base
 FROM node:18
 
 # Define o diretório de trabalho
@@ -7,39 +7,27 @@ WORKDIR /app
 # Copia os arquivos do projeto para dentro do container
 COPY . .
 
-# Instala as dependências do sistema para rodar o Puppeteer
+# Instala dependências do sistema para Puppeteer e outras libs necessárias
 RUN apt-get update && apt-get install -y \
-  wget \
-  curl \
-  gnupg \
   libnss3 \
-  libx11-xcb1 \
-  libxcomposite1 \
-  libxcursor1 \
-  libxi6 \
-  libxtst6 \
-  libglib2.0-0 \
   libatk1.0-0 \
   libatk-bridge2.0-0 \
+  libcups2 \
+  libxkbcommon-x11-0 \
+  libxcomposite1 \
   libxdamage1 \
   libxrandr2 \
   libgbm1 \
   libasound2 \
   libpangocairo-1.0-0 \
-  libpango-1.0-0 \
-  libcups2 \
-  fonts-liberation \
-  libxshmfence1 \
-  libxrender1 \
-  xdg-utils \
+  libgobject-2.0-0 \
   && rm -rf /var/lib/apt/lists/*
 
-# Instala as dependências do Node.js
+# Instala as dependências do projeto
 RUN npm install
 
-# Define as variáveis de ambiente para o Puppeteer
-ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=false
-ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/google-chrome-stable
+# Define a variável de ambiente para evitar problemas com Puppeteer no Railway
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
 
-# Comando para iniciar o bot
-CMD ["node", "monitor.js"]
+# Inicia o bot automaticamente quando o Railway rodar
+CMD ["node", "server.js"]
